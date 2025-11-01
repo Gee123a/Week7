@@ -16,25 +16,37 @@ import java.util.Date
 import java.util.Locale
 import com.example.week7.R
 import com.example.week7.data.container.WeatherContainer
+import kotlinx.coroutines.flow.asStateFlow
 
-class viewmodelSoal1 : ViewModel() {
+open class viewmodelSoal1 : ViewModel() {
     private val _citySuggestions = MutableStateFlow<List<String>>(emptyList())
     val citySuggestions: StateFlow<List<String>> = _citySuggestions
-    private val _weather = MutableStateFlow(weatherModel())
+    protected val _weather = MutableStateFlow(weatherModel())
 
-    val weather: StateFlow<weatherModel> = _weather
+    val weather: StateFlow<weatherModel> = _weather.asStateFlow()
+
     fun searchCities(query: String) {
         viewModelScope.launch {
             if (query.length >= 2) {
-                _citySuggestions.value = WeatherContainer.weatherRepository.searchCities(query)
+                try {
+                    println("DEBUG: Making API call for query='$query'")
+                    val suggestions = WeatherContainer.weatherRepository.searchCities(query)
+                    println("DEBUG: API returned ${suggestions.size} results: $suggestions")
+                    _citySuggestions.value = suggestions
+                } catch (e: Exception) {
+                    println("DEBUG: searchCities ERROR - ${e.javaClass.simpleName}: ${e.message}")
+                    e.printStackTrace()
+                    _citySuggestions.value = emptyList()
+                }
             } else {
+                println("DEBUG: Query too short (${query.length} chars)")
                 _citySuggestions.value = emptyList()
             }
         }
     }
 
-    private val _weatherIconUrl = MutableStateFlow<String?>(null)
-    val weatherIconUrl: StateFlow<String?> = _weatherIconUrl
+    protected val _weatherIconUrl = MutableStateFlow<String?>(null)
+    val weatherIconUrl: StateFlow<String?> = _weatherIconUrl.asStateFlow()
 
     val tanggalBerapa = weather.map {
         val date = Date(it.dateTime * 1000L)
@@ -94,7 +106,7 @@ class viewmodelSoal1 : ViewModel() {
             } catch (e: Exception) {
                 _weather.value = _weather.value.copy(
                     isError = true,
-                    errorMessage = "HTTP 404 Not Found"
+                    errorMessage = e.message ?: "Unknown error occurred"
                 )
                 _weatherIconUrl.value = null
             }

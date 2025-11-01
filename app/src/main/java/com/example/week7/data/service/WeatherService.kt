@@ -19,4 +19,11 @@ interface WeatherApiService {
         @Query("limit") limit: Int = 5,
         @Query("appid") apiKey: String
     ): List<GeocodingResponse>
+
+    @GET("geo/1.0/direct")
+    suspend fun geocodingSearch(
+        @Query("q") query: String,
+        @Query("limit") limit: Int,
+        @Query("appid") apiKey: String
+    ): List<GeocodingResponse>
 }

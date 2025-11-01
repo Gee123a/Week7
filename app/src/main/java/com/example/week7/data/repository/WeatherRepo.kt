@@ -1,8 +1,10 @@
 package com.example.week7.data.repository
 
+
 import com.example.week7.data.service.WeatherApiService
 import com.example.week7.data.dto.WeatherResponse
 import com.example.week7.ui.model.weatherModel
+import retrofit2.HttpException
 
 class WeatherRepository(private val weatherService: WeatherApiService) {
     private val apiKey = "020c2152ae7c25e3aa8506c3f2052af2"
@@ -36,12 +38,18 @@ class WeatherRepository(private val weatherService: WeatherApiService) {
     }
 
     suspend fun searchCities(query: String): List<String> {
-        if (query.length < 2) return emptyList()
-
         return try {
-            val response = weatherService.searchCities(query, 5, apiKey)
+            val response = weatherService.geocodingSearch(query, 5, apiKey)
             response.map { "${it.name}, ${it.country}" }
+        } catch (e: HttpException) {
+            if (e.code() == 404) {
+                println("DEBUG: No cities found for '$query'")
+                emptyList()
+            } else {
+                throw e
+            }
         } catch (e: Exception) {
+            println("DEBUG: Exception in searchCities: ${e.message}")
             emptyList()
         }
     }
