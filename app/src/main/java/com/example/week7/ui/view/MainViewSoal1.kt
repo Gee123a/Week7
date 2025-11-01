@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.example.week7.ui.viewmodel.MockViewModelSoal1
+
 import com.example.week7.ui.viewmodel.viewmodelSoal1
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -217,7 +217,7 @@ fun MainViewSoal1(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Left column - Icon, condition, temperature
+
                             Column(
                                 horizontalAlignment = Alignment.Start,
                                 modifier = Modifier.weight(1f)
@@ -247,7 +247,7 @@ fun MainViewSoal1(
                                 )
                             }
 
-                            // Right column - Condition image
+
                             Column(
                                 horizontalAlignment = Alignment.End,
                                 modifier = Modifier.weight(1f)
@@ -268,7 +268,7 @@ fun MainViewSoal1(
 
                         Spacer(modifier = Modifier.height(96.dp))
 
-                        // Weather info cards
+
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(3),
                             modifier = Modifier
@@ -327,11 +327,4 @@ fun MainViewSoal1(
             }
         }
     }
-}
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun PreviewMainViewSoal1() {
-    val mockViewModel = remember { MockViewModelSoal1() }
-    MainViewSoal1(viewModel = mockViewModel)
 }
